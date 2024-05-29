@@ -70,16 +70,81 @@
 
 
 
-    const rows = 16 ; 
-    for(let row = 2 ; row<rows  ; row++){
-        const numObstacle = row +1 ; 
-        const y = 0+row*35 ; 
-        const spaceing = 36 ; 
-        for(let col = 0 ; col<numObstacle ; col++){
-            const x = width/2 - spaceing*(row/2-col) ; 
-            obstacles.push({x:pad(x) , y:pad(y) , radious:obsradi})            
+    const rows = 16;
+    for (let row = 2; row < rows; row++) {
+      const numObstacles = row + 1;// 3
+      const y = 0 + row * 35;
+      const spacing = 36;
+      for (let col = 0; col < numObstacles; col++) {
+        const x = WIDTH / 2 - spacing * (row / 2 - col);
+
+        // for first row which has 2+1 obstacles 
+        // 800/2-36*(2/2-0) = 800/2 - 36  == 400-36
+        // 800/2 - 36*(2/2-1) = 800/2    == 400
+        // 800/2 - 36*(2/2-2) = 800/2    == 400+36
+        obstacles.push({ x: pad(x), y: pad(y), radius: obstacleRadius });
+      }
+    }
+
+
+    // to create sinks 
+    const sinkWidth =36 ; 
+    const numSink = 15 ; 
+    for(let i = 0 ; i<numSink ; i++) {
+        const x = width/2+(i-15/2)*(sinkWidth)+obstacleRadius
+        const y = height-240 ;
+        const width= sinkWidth ; 
+        const height = numSink ;
+        sink.push({x , y , width , height }) ;  
+    }
+
+    class Ball{
+        constructor(x , y , radius , color){
+            this.x = x  ; 
+            this.y = y  ; 
+            this.radius = radius ; 
+            this.color = color ;
+            this.vx = 0 ; 
+            this.vy = 0 ; 
+// vx and vy are initital point or swapon points of the ball 
+
+        }
+
+        draw(){
+            c.beginPath() ; 
+            c.arc(umpad(this.x), unpad(this.y), this.radius, 0, Math.PI * 2, false) ; 
+            c.fillStyle = this.color ; 
+            c.fill() ; 
+            c.closePath() ;
+        }
+
+
+
+        update(){
+
+            // we know that the formula of changeing velocity is v = u+at 
+            //  but here we are not considering time because it can be different in different devices and we
+            // want to make it deterministic so we dont take time into consideration
+
+            // v = u+at  || v = u+gt 
+            this.vy = this.vy+gravity ; 
+
+            // update the posation also 
+            // for changeing the position we have a formula if velocity is giiven
+            // x = v+ut  ||not taleing time into consideration so x = v+u  
+            this.x += this.vx ; 
+            this.y += this.vy ; 
+
+            obstacles.forEach(obstacle=>{
+                const dist = Math.hypot(this.x - obstacle.x, this.y - obstacle.y) ; 
+                if(dist < pad(this.radius+obstacle.radius)){
+                    // calculate colasion angle 
+                    
+                }
+            })
         }
     }
+
 
 
     </script>
