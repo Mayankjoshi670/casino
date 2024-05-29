@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinko</title>
+    <style>
+        canvas{
+            background-color: #000 ; 
+        }
+        #addBall{
+            position: absolute;
+            top : 10px ; 
+            right: 10px;
+            background-color: #000;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canva" width="800" , height="800"></canvas>
+    <div id="addBall">AddBall</div>
+    <script>
+        const canvas = document.getElementById('canva')
+        const c = canvas.getContext('2d') ; 
+
+        const multiply  = 10000 ; 
+        const width = 800 ;
+        const height = 800 ;
+        const ballradi = 7 ; 
+        const obsradi = 4 ; 
+        let gravity = pad(0.2) ; 
+        const horizontalFriction = 0.4  ; 
+        const verticalFriction = 0.8 ;
+        let balls = [] ; 
+        let obstacles = [] ;
+        const  sink = [] ;
+        function umpad(val){
+            return Math.floor(val  / multiply) ;
+        }
+
+        function pad(val){
+            return val * multiply ;
+        }
+
+
+
+
+        // code for printing the pramid 
+
+
+        // const rows = 16;
+// const spacing = 2;  
+// for (let row = 2; row < rows; row++) {
+//   let pyramidRow = '';
+// const leadingSpaces = rows - row;
+//   for (let i = 0; i < leadingSpaces; i++) {
+//     pyramidRow += ' ';
+//   }
+// for (let col = 0; col < row + 1; col++) {
+//     pyramidRow += '*';
+//     if (col < row) {
+//       pyramidRow += ' '.repeat(spacing); 
+//     }
+//   }
+//   console.log(pyramidRow);
+// }
+
+
+
+
+    const rows = 16 ; 
+    for(let row = 2 ; row<rows  ; row++){
+        const numObstacle = row +1 ; 
+        const y = 0+row*35 ; 
+        const spaceing = 36 ; 
+        for(let col = 0 ; col<numObstacle ; col++){
+            const x = width/2 - spaceing*(row/2-col) ; 
+            obstacles.push({x:pad(x) , y:pad(y) , radious:obsradi})            
+        }
+    }
+
+
+    </script>
+</body>
+</html>
