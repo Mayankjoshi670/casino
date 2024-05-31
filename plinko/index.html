@@ -26,11 +26,11 @@
         const canvas = document.getElementById('canva');
         const c = canvas.getContext('2d');
 
-        const multiply = 10000;
+        const multiply = 1000;
         const Width = 800;
         const Height = 800;
-        const ballradi = 7;
-        const obsradi = 4;
+        const ballradi = 8;
+        const obsradi = 5;
         let gravity = pad(0.2);
         const horizontalFriction = 0.4;
         const verticalFriction = 0.8;
@@ -106,7 +106,7 @@
 
 
 
-                const possibleValues = [-800, -700, -600, -500, -400, -300, -200, -100, 0, 100, 200, 300, 400, 500, 600, 700, 800];
+                const possibleValues = [ -500, -400, -300, -200, -100, 0, 100, 200, 300, 400, 500];
     const randomIndex = Math.floor(Math.random() * possibleValues.length);
     this.vx = this.vx +  possibleValues[randomIndex];
 
