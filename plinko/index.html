@@ -5,148 +5,171 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plinko</title>
     <style>
-        canvas{
-            background-color: #000 ; 
+        canvas {
+            background-color: #000;
         }
-        #addBall{
+        #addBall {
             position: absolute;
-            top : 10px ; 
+            top: 10px;
             right: 10px;
             background-color: #000;
+            color: white;
             padding: 10px;
             cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <canvas id="canva" width="800" , height="800"></canvas>
-    <div id="addBall">AddBall</div>
+    <canvas id="canva" width="800" height="800"></canvas>
+    <div id="addBall">Add Ball</div>
     <script>
-        const canvas = document.getElementById('canva')
-        const c = canvas.getContext('2d') ; 
+        const canvas = document.getElementById('canva');
+        const c = canvas.getContext('2d');
 
-        const multiply  = 10000 ; 
-        const width = 800 ;
-        const height = 800 ;
-        const ballradi = 7 ; 
-        const obsradi = 4 ; 
-        let gravity = pad(0.2) ; 
-        const horizontalFriction = 0.4  ; 
-        const verticalFriction = 0.8 ;
-        let balls = [] ; 
-        let obstacles = [] ;
-        const  sink = [] ;
-        function umpad(val){
-            return Math.floor(val  / multiply) ;
+        const multiply = 10000;
+        const width = 800;
+        const height = 800;
+        const ballradi = 7;
+        const obsradi = 4;
+        let gravity = 0.2;
+        const horizontalFriction = 0.4;
+        const verticalFriction = 0.8;
+        let balls = [];
+        let obstacles = [];
+        const sinks = [];
+
+        function unpad(val) {
+            return Math.floor(val / multiply);
         }
 
-        function pad(val){
-            return val * multiply ;
+        function pad(val) {
+            return val * multiply;
         }
 
+        // Code for printing the pyramid
+        const rows = 16;
+        for (let row = 2; row < rows; row++) {
+            const numObstacles = row + 1; // 3
+            const y = 0 + row * 35;
+            const spacing = 36;
+            for (let col = 0; col < numObstacles; col++) {
+                const x = width / 2 - spacing * (row / 2 - col);
 
-
-
-        // code for printing the pramid 
-
-
-        // const rows = 16;
-// const spacing = 2;  
-// for (let row = 2; row < rows; row++) {
-//   let pyramidRow = '';
-// const leadingSpaces = rows - row;
-//   for (let i = 0; i < leadingSpaces; i++) {
-//     pyramidRow += ' ';
-//   }
-// for (let col = 0; col < row + 1; col++) {
-//     pyramidRow += '*';
-//     if (col < row) {
-//       pyramidRow += ' '.repeat(spacing); 
-//     }
-//   }
-//   console.log(pyramidRow);
-// }
-
-
-
-
-    const rows = 16;
-    for (let row = 2; row < rows; row++) {
-      const numObstacles = row + 1;// 3
-      const y = 0 + row * 35;
-      const spacing = 36;
-      for (let col = 0; col < numObstacles; col++) {
-        const x = WIDTH / 2 - spacing * (row / 2 - col);
-
-        // for first row which has 2+1 obstacles 
-        // 800/2-36*(2/2-0) = 800/2 - 36  == 400-36
-        // 800/2 - 36*(2/2-1) = 800/2    == 400
-        // 800/2 - 36*(2/2-2) = 800/2    == 400+36
-        obstacles.push({ x: pad(x), y: pad(y), radius: obstacleRadius });
-      }
-    }
-
-
-    // to create sinks 
-    const sinkWidth =36 ; 
-    const numSink = 15 ; 
-    for(let i = 0 ; i<numSink ; i++) {
-        const x = width/2+(i-15/2)*(sinkWidth)+obstacleRadius
-        const y = height-240 ;
-        const width= sinkWidth ; 
-        const height = numSink ;
-        sink.push({x , y , width , height }) ;  
-    }
-
-    class Ball{
-        constructor(x , y , radius , color){
-            this.x = x  ; 
-            this.y = y  ; 
-            this.radius = radius ; 
-            this.color = color ;
-            this.vx = 0 ; 
-            this.vy = 0 ; 
-// vx and vy are initital point or swapon points of the ball 
-
+                // For first row which has 2+1 obstacles
+                // 800/2 - 36*(2/2-0) = 800/2 - 36  == 400-36
+                // 800/2 - 36*(2/2-1) = 800/2      == 400
+                // 800/2 - 36*(2/2-2) = 800/2 + 36 == 400+36
+                obstacles.push({ x: pad(x), y: pad(y), radius: obsradi });
+            }
         }
 
-        draw(){
-            c.beginPath() ; 
-            c.arc(umpad(this.x), unpad(this.y), this.radius, 0, Math.PI * 2, false) ; 
-            c.fillStyle = this.color ; 
-            c.fill() ; 
-            c.closePath() ;
+        // To create sinks
+        const sinkWidth = 36;
+        const numSink = 15;
+        for (let i = 0; i < numSink; i++) {
+            const x = width / 2 + (i - 15 / 2) * sinkWidth + obsradi;
+            const y = height - 240;
+            const width = sinkWidth;
+            const height = 20;
+            sinks.push({ x, y, width, height });
         }
 
+        class Ball {
+            constructor(x, y, radius, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = color;
+                this.vx = 0;
+                this.vy = 0;
+                // vx and vy are initial points or spawn points of the ball
+            }
 
+            draw() {
+                c.beginPath();
+                c.arc(unpad(this.x), unpad(this.y), this.radius, 0, Math.PI * 2, false);
+                c.fillStyle = this.color;
+                c.fill();
+                c.closePath();
+            }
 
-        update(){
+            update() {
+                // We know that the formula for changing velocity is v = u + at
+                // But here we are not considering time because it can be different in different devices and we
+                // want to make it deterministic so we don't take time into consideration
 
-            // we know that the formula of changeing velocity is v = u+at 
-            //  but here we are not considering time because it can be different in different devices and we
-            // want to make it deterministic so we dont take time into consideration
+                // v = u + at  || v = u + gt
+                this.vy = this.vy + gravity;
 
-            // v = u+at  || v = u+gt 
-            this.vy = this.vy+gravity ; 
+                // Update the position also
+                // For changing the position we have a formula if velocity is given
+                // x = v + ut  || not taking time into consideration so x = v + u
+                this.x += this.vx;
+                this.y += this.vy;
 
-            // update the posation also 
-            // for changeing the position we have a formula if velocity is giiven
-            // x = v+ut  ||not taleing time into consideration so x = v+u  
-            this.x += this.vx ; 
-            this.y += this.vy ; 
+                obstacles.forEach(obstacle => {
+                    const dist = Math.hypot(this.x - obstacle.x, this.y - obstacle.y);
+                    if (dist < pad(this.radius + obstacle.radius)) {
+                        // Collision angle
+                        const collisionAngle = Math.atan2(this.y - obstacle.y, this.x - obstacle.x);
+                        // To calculate speed: sqrt(square of horizontal speed + square of vertical speed)
+                        const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
 
-            obstacles.forEach(obstacle=>{
-                const dist = Math.hypot(this.x - obstacle.x, this.y - obstacle.y) ; 
-                if(dist < pad(this.radius+obstacle.radius)){
-                    // calculate colasion angle 
-                    
-                }
+                        // There can be a possibility that the ball can stick inside the obstacle. To avoid this, we will adjust the position of them
+                        const overlap = this.radius + obstacle.radius - unpad(dist);
+                        this.x += pad(Math.cos(collisionAngle) * overlap);
+                        this.y += pad(Math.sin(collisionAngle) * overlap);
+                    }
+                });
+
+                // Collision with sinks
+                sinks.forEach(sink => {
+                    if (
+                        unpad(this.x) > sink.x - sink.width / 2 &&
+                        unpad(this.x) < sink.x + sink.width / 2 &&
+                        unpad(this.y) + this.radius > sink.y - sink.height / 2
+                    ) {
+                        this.vx = 0;
+                        this.vy = 0;
+                    }
+                });
+            }
+        }
+
+        const initialBall = new Ball(pad(width / 2 + 23), pad(50), ballradi, 'blue');
+        balls.push(initialBall);
+        function  drawObstacle(){
+            c.fillStyle = 'white' ; 
+            obstacle.forEach(obstacle=>{
+                c.beginPath() ;
+                c.arc(unpad(obstacle.x) , unpad(obstacle.y) , obstacle.radius , 0 , Math.PI*2) ;
+                c.fill() ;  
+                c.closePath() ;
             })
         }
-    }
+        function drawSink(){
+            c.fillStyle = 'red' ;  
+            for(let i = 0 ; i<sinks.length ; i++){
+                const sink = sinks[i] ;
+                c.fillReact(sink.x , sink.y-sink.height/2 ,sink.width-obsradi*2  ,sink.height) 
+            }
+        }
+        function addBall(){
+            const newBall = new Ball(pad(width/2+13) , pad(50) , ballradi , 'yellow') ;
+            balls.push(newBall) ; 
+        }
 
-
-
+        document.getElementById('add-ball').addEventListener('click', addBall);
+function draw(){
+    c.clearReact(0 , 0 , width , height);
+    drawObstacle();
+    drawSink();
+    balls.forEach(ball=>{
+        ball.draw();
+    ball.update()})
+    
+}
+update() ; 
     </script>
 </body>
 </html>
