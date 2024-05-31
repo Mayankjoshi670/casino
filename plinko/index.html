@@ -27,11 +27,11 @@
         const c = canvas.getContext('2d');
 
         const multiply = 10000;
-        const width = 800;
-        const height = 800;
+        const Width = 800;
+        const Height = 800;
         const ballradi = 7;
         const obsradi = 4;
-        let gravity = 0.2;
+        let gravity = pad(0.2);
         const horizontalFriction = 0.4;
         const verticalFriction = 0.8;
         let balls = [];
@@ -53,7 +53,7 @@
             const y = 0 + row * 35;
             const spacing = 36;
             for (let col = 0; col < numObstacles; col++) {
-                const x = width / 2 - spacing * (row / 2 - col);
+                const x = Width / 2 - spacing * (row / 2 - col);
 
                 // For first row which has 2+1 obstacles
                 // 800/2 - 36*(2/2-0) = 800/2 - 36  == 400-36
@@ -67,13 +67,13 @@
         const sinkWidth = 36;
         const numSink = 15;
         for (let i = 0; i < numSink; i++) {
-            const x = width / 2 + (i - 15 / 2) * sinkWidth + obsradi;
-            const y = height - 240;
+            const x = Width / 2 + (i - 15 / 2) * sinkWidth + obsradi;
+            const y = Height - 240;
             const width = sinkWidth;
-            const height = 20;
+            const height = width;
             sinks.push({ x, y, width, height });
         }
-
+ 
         class Ball {
             constructor(x, y, radius, color) {
                 this.x = x;
@@ -93,6 +93,8 @@
                 c.closePath();
             }
 
+
+
             update() {
                 // We know that the formula for changing velocity is v = u + at
                 // But here we are not considering time because it can be different in different devices and we
@@ -101,6 +103,18 @@
                 // v = u + at  || v = u + gt
                 this.vy = this.vy + gravity;
 
+
+
+
+                const possibleValues = [-800, -700, -600, -500, -400, -300, -200, -100, 0, 100, 200, 300, 400, 500, 600, 700, 800];
+    const randomIndex = Math.floor(Math.random() * possibleValues.length);
+    this.vx = this.vx +  possibleValues[randomIndex];
+
+
+
+
+                
+                
                 // Update the position also
                 // For changing the position we have a formula if velocity is given
                 // x = v + ut  || not taking time into consideration so x = v + u
@@ -136,11 +150,11 @@
             }
         }
 
-        const initialBall = new Ball(pad(width / 2 + 23), pad(50), ballradi, 'blue');
+        const initialBall = new Ball(pad(Width / 2 + 23), pad(50), ballradi, 'yellow');
         balls.push(initialBall);
         function  drawObstacle(){
             c.fillStyle = 'white' ; 
-            obstacle.forEach(obstacle=>{
+            obstacles.forEach(obstacle=>{
                 c.beginPath() ;
                 c.arc(unpad(obstacle.x) , unpad(obstacle.y) , obstacle.radius , 0 , Math.PI*2) ;
                 c.fill() ;  
@@ -151,24 +165,39 @@
             c.fillStyle = 'red' ;  
             for(let i = 0 ; i<sinks.length ; i++){
                 const sink = sinks[i] ;
-                c.fillReact(sink.x , sink.y-sink.height/2 ,sink.width-obsradi*2  ,sink.height) 
+                c.fillRect(sink.x , sink.y-sink.height/2 ,sink.width-obsradi*2  ,sink.height) 
             }
         }
-        function addBall(){
-            const newBall = new Ball(pad(width/2+13) , pad(50) , ballradi , 'yellow') ;
-            balls.push(newBall) ; 
-        }
+        // function addBall(){
+        //     const newBall = new Ball(pad(Width/2+13) , pad(50) , ballradi , 'yellow') ;
+        //     balls.push(newBall) ; 
+        // }
 
-        document.getElementById('add-ball').addEventListener('click', addBall);
+        function addBall() {
+    // Assuming Width and ballradi are already defined somewhere in your code
+    const randomX = Math.random() * (Width/2-13 - Width/2 )+Width/2+3;
+    const newBall = new Ball(pad(randomX), pad(50), ballradi, 'yellow');
+    balls.push(newBall);
+}
+
+        document.getElementById('addBall').addEventListener('click', addBall);
 function draw(){
-    c.clearReact(0 , 0 , width , height);
+    c.clearRect(0 , 0 , Width , Height);
     drawObstacle();
     drawSink();
-    balls.forEach(ball=>{
+
+    balls.forEach(ball => {
         ball.draw();
-    ball.update()})
+        ball.update();
+      });
+
+} 
+    function update(){
+        draw() ; 
+        requestAnimationFrame(update);
+    }
     
-}
+
 update() ; 
     </script>
 </body>
